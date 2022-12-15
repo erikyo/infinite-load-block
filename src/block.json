@@ -1,0 +1,8 @@
+{
+  "apiVersion": 2,
+  "name": "codekraft/infinite-load",
+  "title": "Infinite Load",
+  "style": "file:../build/style-infinite-load.css",
+  "viewScript": "file:../build/infinite-load-frontend.js",
+  "editorScript": "file:../build/infinite-load.js"
+}

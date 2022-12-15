@@ -1,0 +1,11 @@
+{
+  "autoload":{
+    "psr-4":{
+      "InfiniteLoad\\RestApi\\":"api/",
+      "InfiniteLoad\\Engine\\":"engine/"
+    }
+  },
+  "config":{
+    "optimize-autoloader":true
+  }
+}
