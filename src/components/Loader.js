@@ -22,7 +22,7 @@ export const Loader = ( {
 	size = 40,
 	animationSpeed = 500,
 	colorPrimary = pluginPrimaryColor,
-	colorSecondary = 'var(--wp--preset--color--vivid-cyan-blue)',
+	colorSecondary = 'var(--wp--preset--color--grey-800)',
 } ) => {
 	return isLoading ? (
 		<svg

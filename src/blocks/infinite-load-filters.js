@@ -81,16 +81,23 @@ export const InfiniteLoadFilters = {
 					<>
 						<input
 							type={ 'search' }
-							value={ 'this input is a fake' }
+							value={ 'fake' }
 							readOnly={ true }
 						/>
 
 						<select readOnly={ true }>
-							<option value="this select is a fake" />
+							<option value="fake" />
 						</select>
 					</>
 				) }
-				{ activeFilters.length && activeFilters.join() }
+				{ activeFilters.length &&
+					activeFilters.map( ( filter ) => (
+						<>
+							<select id={ 'select-' + filter }>
+								<option value={ 'fake' }>{ filter }</option>
+							</select>
+						</>
+					) ) }
 				<InnerBlocks template={ FILTERSTEMPLATE } />
 			</div>
 		);
@@ -114,17 +121,24 @@ export const InfiniteLoadFilters = {
 				{ searchEnabled && (
 					<>
 						<label htmlFor="select-orderby">orderby</label>
-						<select id="select-orderby">
-							<option value="ID">default</option>
-							<option value="title-asc">title a-z</option>
-							<option value="title-desc">title z-a</option>
-							<option value="date-asc">date asc</option>
-							<option value="date-desc">date desc</option>
-							<option value="relevance">relevance</option>
+						<select id="select-sortby">
+							{ /* @todo: add a user control to choose filters  */ }
+							<option value="ID-desc">default</option>
+							<option value="title-desc">title a-z</option>
+							<option value="title-asc">title z-a</option>
+							<option value="date-desc">date asc</option>
+							<option value="date-asc">date desc</option>
 						</select>
 					</>
 				) }
-				{ activeFilters.length && activeFilters.join() }
+				{ activeFilters.length &&
+					activeFilters.map( ( filter ) => (
+						<>
+							<select id={ 'select-' + filter }>
+								<option value={ '' }>{ filter }</option>
+							</select>
+						</>
+					) ) }
 			</div>
 		);
 	},

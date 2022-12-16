@@ -2,7 +2,7 @@ import { fetchPost } from './utils/fetch';
 import apiFetch from '@wordpress/api-fetch';
 import { NAMESPACE } from './blocks/infinite-load-config';
 import { wrapGrid } from 'animate-css-grid';
-import { updateUrl } from './utils/helpers';
+import { updateUrl, getFromQueryString } from './utils/helpers';
 
 apiFetch.use( apiFetch.createNonceMiddleware( NAMESPACE ) );
 
@@ -22,28 +22,45 @@ function infiniteLoad() {
 			/* parse query data, since the json array */
 			const data = JSON.parse( dataNode.innerHTML.split( '=' )[ 1 ] );
 			const { displayProxies, startWith, stopAfter } = data.query;
+
 			/* set the current page */
-			data.query.page = 0;
+			data.query.page =
+				parseInt(
+					getFromQueryString( window.location.search, 's' ),
+					10
+				) || 0;
+
 			/* remove unneeded plugin data from query */
 			delete data.query.displayProxies;
 			delete data.query.startWith;
 			delete data.query.stopAfter;
 
-			let searchTimeout = null;
+			console.log(
+				'displayProxies %s, startWith %s, stopAfter %s',
+				displayProxies,
+				startWith,
+				stopAfter
+			);
 
 			const filterArea = loopNode.parentNode.querySelector(
 				'.infinite-load-filters'
 			);
-			const postCounter = document.createElement( 'p' );
+			const postCounter = document.createElement( 'label' );
 			postCounter.textContent = '0 / 0';
 			postCounter.classList.add( 'infinite-load-counter' );
 			filterArea.prepend( postCounter );
 
+			/**
+			 * the input element that fires the search query
+			 *
+			 * @type {Element}
+			 */
 			const searchInput = filterArea.querySelector(
 				'input[type="search"]'
 			);
 			searchInput.addEventListener( 'keyup', ( ev ) => {
 				if ( ev.key === 'Enter' ) {
+					// @todo redirect to search page (?s=)
 					ev.preventDefault();
 				} else if ( ev.key === 'Escape' ) {
 					searchInput.value = '';
@@ -51,11 +68,28 @@ function infiniteLoad() {
 				} else if ( ! ev.target.value ) {
 					posts.shown = posts.list;
 					posts.hidden = [];
-					return posts.updateFilters( posts.shown, posts.hidden );
+					return posts.updateFilters();
 				}
 				return posts.search( ev.target.value );
 			} );
 
+			/**
+			 * the select element that fires the sortby function
+			 *
+			 * @type {Element}
+			 */
+			const sortSelect = filterArea.querySelector(
+				'select#select-sortby'
+			);
+			sortSelect.addEventListener( 'change', ( ev ) => {
+				return posts.sortby( ev.target.value );
+			} );
+
+			/**
+			 * the pagination element wrapper div
+			 *
+			 * @type {Element}
+			 */
 			const pagination = loopNode.parentNode.querySelector(
 				'.infinite-load-pagination'
 			);
@@ -74,7 +108,7 @@ function infiniteLoad() {
 			/* add the wrapper after infinite-load-data */
 			loopNode.parentNode.insertBefore( wrapper, loopNode.nextSibling );
 
-			wrapGrid( wrapper, {
+			const { forceGridAnimation } = wrapGrid( wrapper, {
 				duration: 500,
 				stagger: 50,
 			} );
@@ -84,6 +118,7 @@ function infiniteLoad() {
 				const newItem = document.createElement( 'div' );
 				newItem.id = 'post-' + postData.ID;
 				newItem.classList.add( 'post-item' );
+				newItem.style.order = ( posts.list.length + 1 ).toString();
 
 				postData.post_image = postData.post_image || '';
 				postData.post_category = postData.post_category
@@ -101,13 +136,6 @@ function infiniteLoad() {
 
 				return newItem;
 			};
-
-			console.log(
-				'displayProxies %s, startWith %s, stopAfter %s',
-				displayProxies,
-				startWith,
-				stopAfter
-			);
 
 			function setWait( waitValue ) {
 				if ( waitValue ) {
@@ -134,16 +162,20 @@ function infiniteLoad() {
 				hidden: [],
 				shown: [],
 				list: [],
+				timeout: null,
 				updateCount: () => {
 					return posts.shown.length + ' / ' + posts.list.length;
 				},
+				getDisplayedPost: ( id ) => {
+					return wrapper.querySelector( '#post-' + id );
+				},
 				updateFilters: () => {
 					posts.hidden.forEach( ( el ) => {
-						const item = wrapper.querySelector( '#post-' + el.ID );
+						const item = posts.getDisplayedPost( el.ID );
 						if ( item ) item.remove();
 					} );
 					posts.shown.forEach( ( el ) => {
-						const item = wrapper.querySelector( '#post-' + el.ID );
+						const item = posts.getDisplayedPost( el.ID );
 						if ( ! item ) wrapper.appendChild( createPost( el ) );
 					} );
 					postCounter.textContent = posts.updateCount();
@@ -151,8 +183,8 @@ function infiniteLoad() {
 				search: ( term ) => {
 					updateUrl( 'search', term );
 
-					if ( searchTimeout ) {
-						clearTimeout( searchTimeout );
+					if ( posts.timeout ) {
+						clearTimeout( posts.timeout );
 					}
 
 					const regex = new RegExp(
@@ -160,7 +192,7 @@ function infiniteLoad() {
 						'i'
 					);
 
-					searchTimeout = setTimeout( () => {
+					posts.timeout = setTimeout( () => {
 						/* filter item to be shown */
 						posts.shown = term
 							? posts.list.filter( ( post ) =>
@@ -174,11 +206,42 @@ function infiniteLoad() {
 							  )
 							: [];
 
-						posts.updateFilters( posts.shown, posts.hidden );
+						posts.updateFilters();
 					}, 300 );
 				},
 				sortby: ( sorting ) => {
-					return sorting;
+					let [ sortby, sortDirection ] = sorting.split( '-' );
+
+					if ( sortby === 'title' ) {
+						sortby = 'post_title';
+					} else if ( sortby === 'date' ) {
+						sortby = 'post_date';
+					} else {
+						sortby = 'ID';
+					}
+
+					/* sort the displayed posts */
+					if ( 'ID' !== sortby ) {
+						posts.shown = posts.shown.sort( ( a, b ) =>
+							a[ sortby ].localeCompare( b[ sortby ] )
+						);
+					} else {
+						posts.shown = posts.shown.sort(
+							( a, b ) => a[ sortby ] > b[ sortby ]
+						);
+					}
+
+					/* sort direction reversed for ASC the posts */
+					if ( sortDirection === 'asc' )
+						posts.shown = posts.shown.reverse();
+
+					posts.sortItems();
+				},
+				sortItems: () => {
+					posts.shown.forEach( ( el, index ) => {
+						posts.getDisplayedPost( el.ID ).style.order = index;
+					} );
+					forceGridAnimation();
 				},
 				loadItems: () => {
 					/* set wait state */

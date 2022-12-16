@@ -2,7 +2,6 @@ import { Loader } from '../components/Loader';
 import { iconPagination as icon, pluginPrimaryColor } from '../assets/icons';
 import { InspectorControls, useBlockProps } from '@wordpress/block-editor';
 import {
-	__experimentalNumberControl as NumberControl, Button,
 	ColorPalette,
 	Panel,
 	PanelBody,
@@ -165,7 +164,11 @@ export const InfiniteLoadPagination = {
 					colorSecondary={ secondaryColor }
 					size={ loaderSize }
 				/>
-				<input type={ 'button' } className={ 'button button-primary hide' } value={ __( 'load more' ) } />
+				<input
+					type={ 'button' }
+					className={ 'button button-primary hide' }
+					value={ __( 'Load more' ) }
+				/>
 			</div>
 		);
 	},
