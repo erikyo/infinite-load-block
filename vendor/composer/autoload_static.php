@@ -29,6 +29,7 @@ class ComposerStaticInit882b7e1fcdb59d298fbcf797f56afed6
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
         'InfiniteLoad\\Engine\\Enqueue' => __DIR__ . '/../..' . '/engine/Enqueue.php',
         'InfiniteLoad\\Engine\\QueryFilter' => __DIR__ . '/../..' . '/engine/QueryFilter.php',
+        'InfiniteLoad\\RestApi\\RestApi' => __DIR__ . '/../..' . '/api/RestApi.php',
     );
 
     public static function getInitializer(ClassLoader $loader)

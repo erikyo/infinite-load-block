@@ -55,7 +55,7 @@ export const InfiniteLoadFilters = {
 							<SelectControl
 								multiple
 								label={ __( 'Select filters type' ) }
-								value={ activeFilters } // e.g: value = [ 'a', 'c' ]
+								value={ activeFilters }
 								onChange={ ( selectedFilters ) => {
 									setAttributes( {
 										activeFilters: selectedFilters,
@@ -78,11 +78,17 @@ export const InfiniteLoadFilters = {
 					</Panel>
 				</InspectorControls>
 				{ searchEnabled && (
-					<input
-						type={ 'search' }
-						defaultValue={ 'this input is a fake' }
-						readOnly={ true }
-					/>
+					<>
+						<input
+							type={ 'search' }
+							value={ 'this input is a fake' }
+							readOnly={ true }
+						/>
+
+						<select readOnly={ true }>
+							<option value="this select is a fake" />
+						</select>
+					</>
 				) }
 				{ activeFilters.length && activeFilters.join() }
 				<InnerBlocks template={ FILTERSTEMPLATE } />
@@ -104,6 +110,19 @@ export const InfiniteLoadFilters = {
 						label="Search"
 						placeholder={ __( 'Search' ) }
 					/>
+				) }
+				{ searchEnabled && (
+					<>
+						<label htmlFor="select-orderby">orderby</label>
+						<select id="select-orderby">
+							<option value="ID">default</option>
+							<option value="title-asc">title a-z</option>
+							<option value="title-desc">title z-a</option>
+							<option value="date-asc">date asc</option>
+							<option value="date-desc">date desc</option>
+							<option value="relevance">relevance</option>
+						</select>
+					</>
 				) }
 				{ activeFilters.length && activeFilters.join() }
 			</div>

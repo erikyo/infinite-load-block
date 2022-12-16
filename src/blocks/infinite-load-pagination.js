@@ -1,8 +1,8 @@
 import { Loader } from '../components/Loader';
 import { iconPagination as icon, pluginPrimaryColor } from '../assets/icons';
-import { InspectorControls } from '@wordpress/block-editor';
+import { InspectorControls, useBlockProps } from '@wordpress/block-editor';
 import {
-	__experimentalNumberControl as NumberControl,
+	__experimentalNumberControl as NumberControl, Button,
 	ColorPalette,
 	Panel,
 	PanelBody,
@@ -150,8 +150,13 @@ export const InfiniteLoadPagination = {
 			loaderSize,
 			paginationAlignment,
 		} = attributes;
+
+		const blockProps = useBlockProps.save();
+		blockProps.className =
+			'infinite-load-pagination ' + paginationAlignment;
+
 		return (
-			<div className={ paginationAlignment }>
+			<div { ...blockProps }>
 				<Loader
 					className={ 'infinite-loader' }
 					isLoading={ true }
@@ -160,9 +165,7 @@ export const InfiniteLoadPagination = {
 					colorSecondary={ secondaryColor }
 					size={ loaderSize }
 				/>
-				<input type={ 'button' } className={ 'button button-primary' }>
-					{ __( 'load more' ) }
-				</input>
+				<input type={ 'button' } className={ 'button button-primary hide' } value={ __( 'load more' ) } />
 			</div>
 		);
 	},

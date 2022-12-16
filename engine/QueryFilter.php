@@ -12,7 +12,6 @@
 namespace InfiniteLoad\Engine;
 
 use WP_Block;
-use WP_Query;
 
 /**
  * QueryFilter
@@ -25,43 +24,7 @@ class QueryFilter {
      * @return void|boolean
      */
     function __construct() {
-        // add_filter( 'pre_render_block', array($this, 'infl_filter_query'), 10, 3);
         add_filter( 'render_block_data', array($this, 'infl_filter_block'), 10, 3);
-    }
-
-    /**
-     * Filter the block query if the namespace is set to codekraft/infinite-load
-     *
-     * @param string|null $pre_rendered The pre-rendered content. Default null.
-     * @param array $block The block being rendered.
-     * @param WP_Block $parent_block If this is a nested block, a reference to the parent block.
-     *
-     * @return string|null The pre-rendered content.
-     */
-    public function infl_filter_query($pre_rendered, $block, $parent_block): ?string {
-
-        if( isset($block[ 'attrs' ][ 'namespace' ]) && 'codekraft/infinite-load' === $block[ 'attrs' ][ 'namespace' ] ) {
-            /**
-             * Adds a callback function to codekraft/infinite-load filter hook.
-             *
-             * @param array $query Array containing parameters for WP_Query as parsed by the block context.
-             * @param WP_Block $wp_block The block being rendered.
-             * @param int $page the current query's page.
-             *
-             * @retrun void
-             */
-            add_filter( 'query_loop_block_query_vars', function( $query, $wp_block, $page ) use ($block) {
-                    /** You can read your block custom query parameters here and build your query */
-                    $query['posts_per_page'] = intval($block['attrs']['query']['startWith']) + 1;
-                    // @todo: ask the reason why posts_per_page=0 doesn't work
-                    // $query['author'] = -1;
-                    return apply_filters( 'infinite_load_query_vars', $query );
-                }, 1, 3 );
-
-            return $pre_rendered;
-        }
-
-        return null;
     }
 
     /**
@@ -84,7 +47,7 @@ class QueryFilter {
             foreach ( $parsed_block[ 'innerBlocks' ] as $key => $inner_block ) {
                 if ( isset( $inner_block['blockName'] ) && $inner_block['blockName'] === 'core/post-template' ) {
 
-                    /* @TODO: store the inner block template for further use */
+                    /* @TODO: store the inner block template and layout settings for further use */
                     $template = $inner_block['innerBlocks'];
                     $layout = $parsed_block[ 'attrs' ]['displayLayout'];
 

@@ -35,7 +35,8 @@
     "@wordpress/hooks": "^3.22.0",
     "@wordpress/i18n": "^4.22.0",
     "@wordpress/icons": "^9.13.0",
-    "@wordpress/scripts": "^24.6.0"
+    "@wordpress/scripts": "^24.6.0",
+    "animate-css-grid": "^1.4.3"
   },
   "engines": {
     "node": ">=14.0.0",

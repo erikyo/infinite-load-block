@@ -25,7 +25,7 @@ export const infiniteLoadConfig = {
 			columns: 3,
 		},
 		query: {
-			perPage: 6,
+			perPage: 5,
 			startWith: 0,
 			stopAfter: 3,
 			displayProxies: true,

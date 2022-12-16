@@ -31,7 +31,6 @@ export const Loader = ( {
 			style={ {
 				width: size + 'px',
 				height: size + 'px',
-				fill: colorPrimary,
 			} }
 		>
 			<path

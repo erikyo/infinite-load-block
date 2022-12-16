@@ -27,34 +27,32 @@ class RestApi {
             $this->add_manager_route();
         } );
     }
-
-
     public function add_manager_route() {
         \register_rest_route( 'infinite-load/v1', '/status/', array(
-                'methods'             => 'GET',
-                'permission_callback' => '__return_true',
-                'callback'            => function () { echo 'api ok!'; }
-            ) );
+            'methods'             => 'GET',
+            'permission_callback' => '__return_true',
+            'callback'            => function () { echo 'api ok!'; }
+        ) );
         \register_rest_route( 'infinite-load/v1', '/query/', array(
-                'methods'             => 'POST',
-                'permission_callback' => '__return_true',
-                'callback'            => array( $this, 'infl_query' ),
-                'args'                => array(
-                    'nonce' => array(
-                        'required' => true,
-                    ),
+            'methods'             => 'POST',
+            'permission_callback' => '__return_true',
+            'callback'            => array( $this, 'infl_query' ),
+            'args'                => array(
+                'nonce' => array(
+                    'required' => true,
                 ),
-            ) );
+            ),
+        ) );
         \register_rest_route( 'infinite-load/v1', '/data/', array(
-                'methods'             => 'POST',
-                'permission_callback' => '__return_true',
-                'callback'            => array( $this, 'infl_get_data' ),
-                'args'                => array(
-                    'nonce' => array(
-                        'required' => true,
-                    ),
+            'methods'             => 'POST',
+            'permission_callback' => '__return_true',
+            'callback'            => array( $this, 'infl_get_data' ),
+            'args'                => array(
+                'nonce' => array(
+                    'required' => true,
                 ),
-            ) );
+            ),
+        ) );
     }
 
     /**
@@ -65,14 +63,24 @@ class RestApi {
      * @return array the parsed query arguments ready for WP_Query
      */
     private function infl_prepare_query( $raw_query ) {
-        return array(
+
+        $taxQuery = ( $raw_query['postType'] === 'product' ) ? array(
+            'post_type' => 'product',
+            'tax_query' => array(
+                'taxonomy' => 'product_cat',
+            ),
+        ) : array(
+            'post_type' => esc_html( $raw_query['postType'] ),
+        );
+
+        return array_merge( $taxQuery, array(
             // 'offset'         => ! empty( $raw_query['offset'] ) ? intval( $raw_query['offset'] ) : 0,
             'order'          => ! empty( $raw_query['order'] ) ? esc_html( $raw_query['order'] ) : 'DESC',
             'orderby'        => ! empty( $raw_query['orderBy'] ) ? esc_html( $raw_query['orderBy'] ) : 'post-date',
-            'post_type'      => ! empty( $raw_query['postType'] ) ? esc_html( $raw_query['postType'] ) : 'post',
             'paged'          => ! empty( $raw_query['page'] ) ? intval( $raw_query['page'] ) : 0,
             'posts_per_page' => ! empty( $raw_query['perPage'] ) ? intval( $raw_query['perPage'] ) : 10,
-        );
+            'post_status'    => 'publish',
+        ) );
     }
 
     public function infl_get_data( \WP_REST_Request $request ) {
@@ -136,7 +144,15 @@ class RestApi {
             $query = new WP_Query( $args );
 
             if ( $query->have_posts() ) {
-                $posts    = $query->posts;
+
+                $posts = $query->posts;
+
+                foreach ( $posts as $post ) {
+                    $post->post_image = wp_get_attachment_image_src( get_post_thumbnail_id( $post->ID ), 'large' );
+                    $post->post_cat   = get_the_terms( $post->ID, $post->post_type === 'post' ? 'category' : $post->post_type . "_cat" );
+                    $post->post_tags  = get_the_terms( $post->ID, 'post_tag' );
+                }
+
                 $response = \rest_ensure_response( array( 'message' => 'ok', 'results' => $posts, 'args' => $args ) );
                 $response->set_status( 200 );
             } else {

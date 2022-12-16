@@ -8,10 +8,10 @@ import { addFilter } from '@wordpress/hooks';
 import './assets/style.scss';
 
 /** The block edit function */
-import { infiniteLoadConfig, NAMESPACE } from './elements/infinite-load-config';
-import { InfiniteLoadPagination } from './elements/infinite-load-pagination';
-import { InfiniteLoadFilters } from './elements/infinite-load-filters';
-import infiniteLoadEdit from './elements/infinite-load-edit';
+import { infiniteLoadConfig, NAMESPACE } from './blocks/infinite-load-config';
+import { InfiniteLoadPagination } from './blocks/infinite-load-pagination';
+import { InfiniteLoadFilters } from './blocks/infinite-load-filters';
+import infiniteLoadEdit from './blocks/infinite-load-edit';
 
 /**
  * Register infiniteLoop helpers blocks

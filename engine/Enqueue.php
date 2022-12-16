@@ -26,9 +26,8 @@ class Enqueue {
             \register_block_type( INFLPATH . '/build' );
         } );
 
-
         \add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_frontend_scripts' ) );
-        \add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_style' ) );
+        // \add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_style' ) );
     }
 
 
@@ -39,7 +38,7 @@ class Enqueue {
      */
     public function enqueue_frontend_scripts() {
         $asset = include INFLPATH . '/build/infinite-load-frontend.asset.php';
-        \wp_enqueue_script( 'infinite-load-frontend', INFLURL . '/build/infinite-load-frontend.js', $asset['dependencies'], false, true );
+        \wp_enqueue_script( 'infinite-load-frontend', INFLURL . 'build/infinite-load-frontend.js', $asset['dependencies'], false, true );
         \wp_localize_script(
             'infinite-load-frontend',
             'infl',
@@ -55,7 +54,7 @@ class Enqueue {
      * @return void
      */
     public function enqueue_style() {
-        \wp_enqueue_style( 'infinite-load-style', INFLURL . '/build/style-infinite-load.css' );
+        \wp_enqueue_style( 'infinite-load-style', INFLURL . 'build/style-infinite-load.css' );
     }
 
 }

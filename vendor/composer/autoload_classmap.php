@@ -9,4 +9,5 @@ return array(
     'Composer\\InstalledVersions' => $vendorDir . '/composer/InstalledVersions.php',
     'InfiniteLoad\\Engine\\Enqueue' => $baseDir . '/engine/Enqueue.php',
     'InfiniteLoad\\Engine\\QueryFilter' => $baseDir . '/engine/QueryFilter.php',
+    'InfiniteLoad\\RestApi\\RestApi' => $baseDir . '/api/RestApi.php',
 );
