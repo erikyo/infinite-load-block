@@ -110,7 +110,7 @@ function infiniteLoad() {
 
 			const { forceGridAnimation } = wrapGrid( wrapper, {
 				duration: 500,
-				stagger: 50,
+				stagger: 20,
 			} );
 
 			const createPost = ( postData ) => {
@@ -124,14 +124,16 @@ function infiniteLoad() {
 				postData.post_category = postData.post_category
 					? postData.post_category[ 0 ].name
 					: 'no category';
-				const postImage = `<figure class="post_img"><img src="${ postData.post_image[ 0 ] }"/></figure>`;
+				const postImage = `<a href="${ postData.guid }"><figure class="post_img"><img src="${ postData.post_image[ 0 ] }"/></figure></a>`;
 
 				newItem.innerHTML = `<div class="inner">
 					${ postImage }
-					<a href="${ postData.guid }"><h4>${ postData.post_title }</h4></a>
-					<p class="post-date has-text-align-right">${ postData.post_date }</p>
-					<p>${ postData.post_category }</p>
-					<p>${ postData.post_excerpt }</p>
+					<div class="post-inner">
+						<a href="${ postData.guid }"><h4>${ postData.post_title }</h4></a>
+						<p class="post-date has-text-align-right">${ postData.post_date }</p>
+						<p>${ postData.post_category }</p>
+						<p>${ postData.post_excerpt }</p>
+					</div>
 				</div>`;
 
 				return newItem;
