@@ -1,19 +1,17 @@
 .infinite-load {
 
   &-filters {
+		width: 100%;
     display: flex;
-    justify-content: flex-end;
-    align-content: center;
     gap: .5rem;
     line-height: 3rem;
-    padding-bottom: 1rem;
 
     input[type="search"] {
       border: 1px solid #999;
     }
 
     input, select {
-      max-width: 300px;
+      max-width: 200px;
       margin: 0;
     }
 
@@ -27,14 +25,15 @@
     grid-auto-flow: dense;
     position: relative;
     margin: 0 auto;
+		clear: both;
 
     .post-item {
+			overflow: hidden;
       color: #444647;
       background: #ffffff;
       border: 1px solid #d0d0d0;
       min-height: 500px;
       width: 100%;
-      padding: 1rem;
       box-sizing: border-box;
       border-radius: 0.2rem;
 
@@ -42,7 +41,6 @@
         background: #f1f1f1;
         box-sizing: border-box;
         padding: 1rem .5rem;
-        margin: -1rem -1rem 1rem;
       }
 
       img {
@@ -51,6 +49,9 @@
         object-fit: contain;
       }
 
+			.post-inner {
+				padding: 1rem;
+			}
       p {
         font-size: .9rem;
         margin: 0 0 .2rem
@@ -59,7 +60,7 @@
   }
 
   &-pagination {
-    padding: 2rem;
+		width: 100%;
 
     .hide {
       display: none;
